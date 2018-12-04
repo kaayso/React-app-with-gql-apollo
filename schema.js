@@ -1,9 +1,9 @@
-const { 
+const {
 	GraphQLObjectType,
 	GraphQLInt,
 	GraphQLString,
 	GraphQLBoolean,
-	GraphQLList, 
+	GraphQLList,
 	GraphQLSchema
 } = require('graphql');
 const axios = require('axios');
@@ -49,6 +49,22 @@ const RocketType = new GraphQLObjectType({
 	})
 });
 
+// DragonType
+const DragonType = new GraphQLObjectType({
+	name: "Dragon",
+	fields: () => ({
+		id: {
+			type: GraphQLString
+		},
+        name : {
+            type : GraphQLString
+        },
+        type : {
+            type : GraphQLString
+        }
+	})
+})
+
 // Root query
 const RootQuery = new GraphQLObjectType({
 	name: "RootQueryType",
@@ -81,6 +97,21 @@ const RootQuery = new GraphQLObjectType({
 			},
 			resolve(parent, args){
 				return axios.get(`https://api.spacexdata.com/v3/rockets/${args.rocket_id}`).then(res => res.data);
+			}
+		},
+        dragons: {
+            type: new GraphQLList(DragonType),
+            resolve(parent, args){
+                return axios.get('https://api.spacexdata.com/v3/dragons').then(res => res.data);
+            }
+        },
+		dragon: {
+			type: DragonType,
+			args: {
+				id: { type: GraphQLString }
+			},
+			resolve(parent, args){
+				return axios.get(`https://api.spacexdata.com/v3/dragon/${args.id}`)
 			}
 		}
 	}
